@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>พยากรณ์อากาศไทย — เทียบ 2 แหล่ง (AccuWeather / TMD / Weather.com)</title>
+  <meta name="description"
+        content="เลือกอำเภอ/จังหวัด/ภาค/ประเทศ แล้วเทียบพยากรณ์จาก AccuWeather, กรมอุตุฯ (TMD), Weather.com" />
+
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #101a2b;
+      --ink: #e5ecff;
+      --muted: #90a0c3;
+      --brand: #53b1fd;
+      --ok: #34d399;
+      --warn: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Inter, Roboto, Ubuntu, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #1f2a44;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 340px 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid #1f2a44;
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    .panel h2 {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+      color: var(--brand);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 6px 0 4px;
+    }
+
+    select,
+    input[type="text"],
+    button {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #2a385a;
+      background: #0e172a;
+      color: var(--ink);
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      background: linear-gradient(180deg, #58b4fd, #2783f3);
+      border: none;
+      font-weight: 600;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 500px) {
+      .cards {
+        grid-template-columns: 450px 1fr;
+      }
+    }
+
+    .card {
+      background: #0e172a;
+      border: 1px solid #203055;
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 220px;
+      min-width: 450px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+    }
+
+    .kvs {
+      display: grid;
+      gap: 6px;
+    }
+
+    .kv {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .kv .k {
+      color: var(--muted);
+    }
+
+    .src {
+      margin-top: auto;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .src a {
+      background: #132042;
+      border: 1px solid #28406f;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #cfe3ff;
+      text-decoration: none;
+    }
+
+    footer {
+      opacity: .6;
+      text-align: center;
+      font-size: 12px;
+      margin: 16px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid #2d3e64;
+      background: #0f1a2f;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ✅ ปุ่ม Ventusky / Windy */
+    .source-buttons {
+      display: flex;
+      gap: 12px;
+      margin: 15px 0;
+    }
+
+    .source-buttons button {
+      flex: 1;
+      padding: 14px 0;
+      font-size: 16px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #58b4fd, #2783f3);
+      border: none;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+button {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #2a385a;
+  background: linear-gradient(180deg, #58b4fd, #2783f3);
+  color: var(--ink);
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);                     /* ขยายเล็กน้อย */
+  box-shadow: 0 4px 12px rgba(40, 130, 243, 0.5); /* เงาสีฟ้า */
+  opacity: 0.95;                              /* จางลงเล็กน้อย */
+}
+    
+    .source-buttons button:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>เว็บพยากรณ์อากาศไทย (เทียบ 2 แหล่ง)</h1>
+  </header>
+
+  <div class="wrap grid">
+    <!-- ซ้าย: ตัวเลือกพื้นที่ + แหล่งข้อมูล -->
+    <aside class="panel">
+      <h2>เลือกพื้นที่</h2>
+
+      <label>ประเทศ</label>
+      <select id="country">
+        <option value="TH" selected>ไทย (TH)</option>
+      </select>
+
+      <label>ภาค</label>
+      <select id="region"></select>
+
+      <label>จังหวัด</label>
+      <select id="province"></select>
+
+      <div style="height:10px"></div>
+      <div class="row">
+        <button id="btnFetch">ดึงข้อมูล</button>
+      </div>
+
+      <div style="margin-top:14px" class="row">
+        <button id="btnCollectAll">รวบรวมข้อมูลพยากรณ์อากาศไทย</button>
+      </div>
+
+<style>
+/* ข่าวสด/ข่าวสารเป็นปุ่ม hover */
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.news-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  background: #132042;
+  border: 1px solid #28406f;
+}
+
+.news-list li:hover {
+  background: linear-gradient(180deg, #58b4fd, #2783f3);
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(40, 130, 243, 0.4);
+}
+
+.news-list li img {
+  width: 60px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.news-list li span {
+  color: #cfe3ff;
+}
+
+.news-list li:hover span {
+  color: #fff;
+}
+</style>
+
+
+      <!-- ข่าวสด -->
+<div class="panel" style="margin-top:16px">
+  <h2>ข่าวสดพยากรณ์ไทย</h2>
+  <ul class="news-list">
+    <li onclick="window.open('https://www.posttoday.com/general-news/729996', '_blank')">
+      <img src="https://image.posttoday.com/uploads/images/md/2025/09/PTasut69UU2NsmFka7rQ.webp?x-image-process=style/lg-webp" alt="พายุฝน">
+      <span>🔥 Post today พยากรณ์อากาศ</span>
+    </li>
+    <li onclick="window.open('https://www.thaipbs.or.th/news/content/356278', '_blank')">
+      <img src="https://news.thaipbs.or.th/media/G0DL5oPyrtt5HBAivKvVNG0Lw7GSt4cAKDfUGcvU25bt1wg59s3Tcr.jpg" alt="กรมอุตุฯ">
+      <span>📢 Thaipbs ข่าวสารสภาพอากาศ</span>
+    </li>
+    <li onclick="window.open('https://medias.thansettakij.com/uploads/images/md/2025/09/XBS4AgaqrzxVlwS04F5E.webp?x-image-process=style/md-webphttps://www.thansettakij.com/general-news/638225', '_blank')">
+      <img src="https://medias.thansettakij.com/uploads/images/md/2025/09/XBS4AgaqrzxVlwS04F5E.webp?x-image-process=style/md-webp" alt="น้ำท่วมกรุงเทพฯ">
+      <span>🔥 thansettakij สภาพอากาศขนาดนี้</span>
+    </li>
+  </ul>
+</div>
+
+<style>
+.weather-history {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.weather-history th, 
+.weather-history td {
+  padding: 8px 10px;
+  border: 1px solid #28406f;
+  text-align: center;
+}
+
+.weather-history thead {
+  background: #132042;
+  color: #cfe3ff;
+}
+
+.weather-history tbody tr:hover {
+  background: rgba(83, 177, 253, 0.1);
+}
+</style>
+
+<!-- ตารางพยากรณ์ย้อนหลัง -->
+<div class="panel" style="margin-top:16px">
+  <h2>ข้อมูลย้อนหลัง 2 วัน</h2>
+  <table class="weather-history">
+    <caption style="caption-side: top; text-align: left; padding: 6px; font-weight: bold; color: #53b1fd;">
+      จังหวัดกรุงเทพมหานคร
+    </caption>
+    <thead>
+      <tr>
+        <th>วันที่</th>
+        <th>อุณหภูมิ</th>
+        <th>ความชื้น</th>
+        <th>ฝน</th>
+        <th>ลม</th>
+      </tr>
+    </thead>
+    <tbody id="history-data">
+      <tr>
+        <td>2025-09-07</td>
+        <td>29°C</td>
+        <td>80%</td>
+        <td>12 มม.</td>
+        <td>5 กม./ชม.</td>
+      </tr>
+      <tr>
+        <td>2025-09-06</td>
+        <td>30°C</td>
+        <td>78%</td>
+        <td>0 มม.</td>
+        <td>7 กม./ชม.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    </aside>
+
+<!-- ขวา: การ์ดผลลัพธ์ -->
+<main class="panel">
+  <h2>ผลลัพธ์พยากรณ์</h2>
+
+  <!-- ปุ่มเลือกแหล่ง -->
+  <div class="source-buttons">
+    <button onclick="showMap(0)">Ventusky</button>
+    <button onclick="showMap(1)">Windy</button>
+  </div>
+
+  <div class="cards">
+    <section class="card">
+      <h3>Ventusky</h3>
+      <div class="kvs" id="accu-content">
+        <div class="kv"><span class="k">สถานะ</span><span>—</span></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Windy</h3>
+      <div class="kvs" id="tmd-content">
+        <div class="kv"><span class="k">สถานะ</span><span>—</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- แผนที่แบบ realtime iframe -->
+  <section class="card" id="card-weather-maps">
+    <h3>แผนที่อากาศแบบอินเตอร์แอคทีฟ</h3>
+    <div style="height:650px; border-radius:12px; overflow:hidden; position:relative;">
+      <!-- Ventusky -->
+      <iframe id="frame-ventusky" width="100%" height="100%"
+              src="https://www.ventusky.com/?p=15.0;100.0;5&l=temperature-2m"
+              frameborder="0" style="display:block;"></iframe>
+
+      <!-- Windy -->
+      <iframe id="frame-windy" width="100%" height="100%"
+              src="https://embed.windy.com/embed2.html?lat=15&lon=100&zoom=5&level=surface&overlay=temp"
+              frameborder="0" style="display:none;"></iframe>
+    </div>
+  </section>
+</main>
+
+</div>
+
+  <footer></footer>
+  
+  <script>
+    let maps = ["frame-ventusky", "frame-windy"];
+    let current = 0;
+    let autoSlideTimer, idleTimer;
+
+    // แสดง iframe ตาม index
+    function showMap(index) {
+      maps.forEach(id => document.getElementById(id).style.display = "none");
+      current = index;
+      document.getElementById(maps[current]).style.display = "block";
+
+      // เมื่อกดปุ่ม ให้รีเซ็ต idle timer
+      resetIdleTimer();
+    }
+
+    // ฟังก์ชันเปลี่ยนหน้าอัตโนมัติ
+    function autoSlide() {
+      maps.forEach(id => document.getElementById(id).style.display = "none");
+      document.getElementById(maps[current]).style.display = "block";
+      current = (current + 1) % maps.length;
+    }
+
+    // เริ่มต้นตอนโหลด
+    resetIdleTimer();
+  </script>
+
+  <script src="./script.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+.widget {
+  animation: fadeIn 0.5s ease;
+}
+
+.flash {
+  animation: flashBg 0.6s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flashBg {
+  0% { background-color: rgba(83,177,253,0.15); }
+  100% { background-color: transparent; }
+}
+
+.source-buttons {
+  display: flex;
+  gap: 10px;               /* ระยะห่างระหว่างปุ่ม */
+  margin-bottom: 10px;
+}
+
+.source-buttons button {
+  flex: 1;                 /* ทำให้ปุ่มกว้างเท่ากัน */
+  text-align: center;
+}
+.source-buttons {
+  display: flex;
+  gap: 12px;          /* ระยะห่างระหว่างปุ่ม */
+  margin-bottom: 12px;
+}
+
+.source-buttons button {
+  flex: 1;                           /* ให้ปุ่มกว้างเท่ากัน */
+  padding: 14px 0;                   /* ความสูงของปุ่ม */
+  font-size: 16px;                   /* ขนาดตัวอักษร */
+  border-radius: 10px;               /* ความโค้ง */
+  background: linear-gradient(180deg, #58b4fd, #2783f3); /* ไล่สีเหมือนปุ่มอื่น */
+  border: none;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.source-buttons button:hover {
+  transform: scale(1.05);   /* ขยายเบาๆ ตอน hover */
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Inter, Roboto, Ubuntu, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+
+  /* จัดกึ่งกลาง */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* กึ่งกลางแนวตั้ง */
+  align-items: center;      /* กึ่งกลางแนวนอน */
+  min-height: 100vh;        /* ให้เต็มหน้าจอ */
+}
+
+body {
+  display: grid;
+  place-items: center;  /* กึ่งกลางทั้งแนวตั้งและแนวนอน */
+  min-height: 100vh;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
